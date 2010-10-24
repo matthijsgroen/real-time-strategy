@@ -43,7 +43,6 @@ class Faction::Base < ActiveRecord::Base
   private
 
   def set_game_instance(asset)
-    puts "Setting game instance"
     asset.game_instance_id = self.game_instance_id
   end
 

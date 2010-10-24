@@ -13,7 +13,7 @@ module Asset::Support::Abilities
     base.class_eval do
       include Asset::Support::Abilities::InstanceMethods
       base.send :include, ActiveSupport::Callbacks
-      base.define_callbacks :ability
+      base.define_callbacks :ability_invocation, :ability_completion
     end
   end
 
@@ -38,11 +38,11 @@ module Asset::Support::Abilities
     end
 
     def after_ability(method, options = {})
-      set_callback :ability, :after, method, options
+      set_callback :ability_completion, :after, method, options
     end
 
     def before_ability(method, options = {})
-      set_callback :ability, :before, method, options
+      set_callback :ability_invocation, :before, method, options
     end
 
     attr_reader :abilities
@@ -65,12 +65,13 @@ module Asset::Support::Abilities
       method_name = options[:as] || name
       raise "Name '#{method_name}' is reserved" if RESERVED_ABILITY_NAMES.include? method_name
       ability_code = <<-EOC
-				return false if run_callbacks(:before_ability) == false
-				script = Script::Manager[:#{name}]
-				options = args.extract_options!
-				options[:asset] = self
-				options[:initiated_by] = self
-				script.execute(*(args << options))
+        run_callbacks :ability_invocation do
+          script = Script::Manager[:#{name}]
+          options = args.extract_options!
+          options[:asset] = self
+          options[:initiated_by] = self
+          script.execute(*(args << options))
+        end
       EOC
       evaluate_ability_method method_name, "def #{method_name}(*args); #{ability_code}; end"
     end
@@ -81,23 +82,24 @@ module Asset::Support::Abilities
       self.ability_catalogs ||= {}
       self.ability_catalogs[method_name] = catalog
       ability_code = <<-EOC
-				return false if run_callbacks(:before_ability) == false
-				raise "Item: #\{item} not available" unless #{method_name}_catalog.include? item
-				script = Script::Manager[:#{name}]
-				options = args.extract_options!
-				options[:asset] = self
-				options[:item] = Asset::Manager[item]
-				options[:initiated_by] = self
-				script.execute(*(args << options))
+        run_callbacks :ability_invocation do
+          raise "Item: #\{item} not available" unless #{method_name}_catalog.include? item
+          script = Script::Manager[:#{name}]
+          options = args.extract_options!
+          options[:asset] = self
+          options[:item] = Asset::Manager[item]
+          options[:initiated_by] = self
+          script.execute(*(args << options))
+        end
       EOC
       evaluate_ability_method method_name, "def #{method_name}(item, *args); #{ability_code}; end"
 
       catalog_code = <<-EOC
-				return @items if @items
-				return [] unless faction
-				catalog = faction.catalogs.find_by_asset_type_and_ability(self.class.internal_name.to_s, "#{method_name}")
-				@items = catalog.items.collect { |item| item.item_type.to_sym } if catalog
-				@items ||= []
+        return @items if @items
+        return [] unless faction
+        catalog = faction.catalogs.find_by_asset_type_and_ability(self.class.internal_name.to_s, "#{method_name}")
+        @items = catalog.items.collect { |item| item.item_type.to_sym } if catalog
+        @items ||= []
       EOC
       evaluate_ability_method "#{method_name}_catalog", "def #{method_name}_catalog; #{catalog_code}; end"
     end
@@ -129,14 +131,14 @@ module Asset::Support::Abilities
 
     def script_finished(script)
       @last_ability = script
-      run_callbacks(:after_ability)
+      run_callbacks(:ability_completion)
     end
 
     def proximity_update_of(trigger, time = Time.now.uts)
       @proximity_trigger = trigger
       #puts "[#{self.inspect}]: actions in progress: #{initiated_scripts.count}"
       if initiated_scripts.empty?
-        run_callbacks(:after_ability)
+        run_callbacks(:ability_completion)
       else
         # TODO: Rechecking current actions on proximity
         scripts.each do |script|

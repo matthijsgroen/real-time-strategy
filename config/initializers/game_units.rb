@@ -74,9 +74,18 @@ class Symbol
   end
 end
 
-#GeoRuby::SimpleFeatures.default_srid = -1
+module Kernel
+  def suppress_warnings
+    original_verbosity = $VERBOSE
+    $VERBOSE = nil
+    result = yield
+    $VERBOSE = original_verbosity
+    result
+  end
+end
 
-#module GeoRuby::SimpleFeatures
-#  #TODO: Remove this when geo_ruby is properly updated
-#  DEFAULT_SRID = -1
-#end
+#GeoRuby::SimpleFeatures.default_srid = -1
+suppress_warnings do
+  #TODO: Remove this when geo_ruby is properly updated
+  GeoRuby::SimpleFeatures::DEFAULT_SRID = -1
+end

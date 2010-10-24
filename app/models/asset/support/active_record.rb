@@ -92,13 +92,9 @@ module Asset::Support::ActiveRecord
       validates_presence_of :part_of_id, :unless => :location
 
       # accessors
-      scope :of_type, lambda { |type|
-        {:conditions => {:type => Asset::Manager[type].name}}
-      }
-      scope :hostile, lambda { |own_faction|
-        {:conditions => ["faction_id <> ?", own_faction.id]}
-      }
-      scope :distinct_types, :select => "DISTINCT ON(assets.type) assets.type, assets.*"
+      scope :of_type, lambda { |type| where(:type => Asset::Manager[type].name) }
+      scope :hostile, lambda { |own_faction| where("faction_id <> ?", own_faction.id) }
+      scope :distinct_types, select("DISTINCT ON(assets.type) assets.type, assets.*")
       scope :closest_at, lambda { |location, distance|
         position = case location
                      when Point then
@@ -107,12 +103,9 @@ module Asset::Support::ActiveRecord
                        location.location
                    end
         sql_point = "GeomFromText('#{position.text_geometry_type}(#{position.text_representation})',-1)"
-        {
-                :select => "assets.*",
-                :joins => "LEFT JOIN asset_movements ON asset_movements.asset_id = assets.id",
-                :conditions => "ST_DWithin(assets.location, #{sql_point}, #{distance})" +
-                        " OR ST_DWithin(asset_movements.path, #{sql_point}, #{distance})"
-        }
+        select("assets.*").joins("LEFT JOIN asset_movements ON asset_movements.asset_id = assets.id").
+                where("ST_DWithin(assets.location, #{sql_point}, #{distance})" +
+                        " OR ST_DWithin(asset_movements.path, #{sql_point}, #{distance})")
       }
       has_and_belongs_to_many :scripts,
               :join_table => "script_assets",
