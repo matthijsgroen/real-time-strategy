@@ -7,7 +7,7 @@ class Script::Scenario
 		@position = position
 	end
 
-	def respond_to?(method_id)
+	def respond_to? method_id, include_private_methods = false
 		true
 	end
 

@@ -10,8 +10,6 @@ gem 'rails', '3.0.1'
 gem "pg"
 gem "nofxx-georuby"
 gem 'spatial_adapter'
-#gem "acts_as_paranoid"
-gem "state_machine"
 
 # Use unicorn as the web server
 # gem 'unicorn'

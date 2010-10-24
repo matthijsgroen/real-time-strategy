@@ -77,14 +77,6 @@ module Asset::Support::ActiveRecord
 
       set_table_name "assets"
 
-      #acts_as_paranoid
-      state_machine :state, :initial => :published do
-        event :delete do
-          transition all => :deleted
-        end
-      end
-      default_scope without_state(:deleted)
-
       belongs_to :faction, :class_name => "Faction::Base"
       belongs_to :bound_to, :class_name => "Asset::Base"
       alias_method_chain :bound_to=, :instance_setting

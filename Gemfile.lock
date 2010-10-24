@@ -127,7 +127,6 @@ GEM
       activerecord (>= 2.2.2)
     spork (0.8.4)
     stackdeck (0.2.0)
-    state_machine (0.9.4)
     term-ansicolor (1.0.5)
     thor (0.14.3)
     treetop (1.4.8)
@@ -156,5 +155,4 @@ DEPENDENCIES
   rspec-rails
   spatial_adapter
   spork
-  state_machine
   webrat

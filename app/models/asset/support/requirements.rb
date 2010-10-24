@@ -47,15 +47,17 @@ module Asset::Support::Requirements
 
     def validate_build_requirements
       unless @skip_build_requirements
-        errors.add_to_base("Asset must be part of a faction for build requirements") and return unless faction or self.class.build_requirements.empty?
+        puts "Validating Asset build requirements"
+        errors.add(:base, "Asset must be part of a faction for build requirements") and return unless faction or self.class.build_requirements.empty?
 
+        puts "Validates presences"
         self.class.build_requirements.each do |requirement|
           case requirement[:validates]
             when :presence_of then
               begin
                 requirement[:class_symbols].each do |asset_symbol|
                   errors.add(:base, "Required #{asset_symbol} does not exist") and return unless required_class_type = Asset::Manager[asset_symbol]
-                  errors.add(:base, "Requires #{asset_symbol} to build") if faction.assets.count(:conditions => {:type => required_class_type.name}).zero?
+                  errors.add(:base, "Requires #{asset_symbol} to build") if faction.assets.where(:type => required_class_type.name).count.zero?
                 end
               end
 
@@ -63,13 +65,14 @@ module Asset::Support::Requirements
         end
       end
 
+      puts "Validates building environment"
       if self.building_size # we have a presence on the map. validate it
         # Check if the position matches the grid
         errors.add(:location, "is not on the grid") unless grid_position?(location)
         # check if there is space available
         errors.add(:location, "has no space to build #{self.class.internal_name}") unless building_space_available?(location, building_size)
       end
-
+      puts "Validation done"
     end
   end
 

@@ -75,11 +75,11 @@ module Asset::Support::Combat
 			end
 		end
 
-		def respond_to_with_weapons? method_name
+		def respond_to_with_weapons? method_name, include_private_methods = false
 			if method_name.to_s =~ /^fire_([_a-zA-Z]\w*)_at$/
 				self.class.weapons.each { |weapon| return true if weapon[:name].to_s == $1 }
 			end
-			respond_to_without_weapons? method_name
+			respond_to_without_weapons? method_name, include_private_methods
 		end
 
 		def method_missing_with_weapons method_name, *args

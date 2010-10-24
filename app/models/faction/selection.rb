@@ -16,9 +16,9 @@ class Faction::Selection < ActiveRecord::Base
 		@available_abilities ||= assets.distinct_types.collect { |type| type.class.abilities }.flatten.uniq
 	end
 
-	def respond_to_with_abilities?(method_id)
+	def respond_to_with_abilities? method_id, include_private_methods = false
 		return true if available_abilities.include? method_id.to_sym
-		respond_to_without_abilities?(method_id)		
+		respond_to_without_abilities? method_id, include_private_methods
 	end
 	alias_method_chain :respond_to?, :abilities
 

@@ -53,61 +53,45 @@
 #
 class Asset::Base < ActiveRecord::Base
 
-	set_table_name "assets"
+  set_table_name "assets"
 
-	def self.metaclass;
-		class << self;
-			self;
-		end;
-	end
+  def self.metaclass;
+    class << self;
+      self;
+    end;
+  end
 
-	include Extensions::GameTime
-	include Asset::Support::ActiveRecord
-	include Asset::Support::Requirements
-	include Asset::Support::Info
-	include Asset::Support::Abilities
-	include Asset::Support::States
-	include Asset::Support::Movement
-	include Asset::Support::Combat
+  include Extensions::GameTime
+  include Asset::Support::ActiveRecord
+  include Asset::Support::Requirements
+  include Asset::Support::Info
+  include Asset::Support::Abilities
+  include Asset::Support::States
+  include Asset::Support::Movement
+  include Asset::Support::Combat
 
-    after_initialize :variable_setup
+  after_initialize :variable_setup
 
-	info \
-		:build_time, 		# building info
-		:build_costs,
+  info :build_time, # building info
+  :build_costs, # operational info
+  :operating_costs, :operating_requires, # movement info
+  :movement_speed, # combat
+  :sight, # vitals
+  :armor, :hitpoints, # production
+  :queue_size, # physical construction
+  :building_size
 
-		# operational info
-		:operating_costs,
-		:operating_requires,
+  def inspect
+    "#{self.class.internal_name}(#{self.health}/#{self.hitpoints})#{" [#{"%.1f" % location.x}, #{"%.1f" % location.y}]" if location}"
+  end
 
-		# movement info
-		:movement_speed,
+  private
 
-		# combat
-		:sight,
-
-		# vitals
-		:armor,
-		:hitpoints,
-
-		# production
-		:queue_size,
-
-	  # physical construction
-		:building_size
-
-
-	def inspect
-		"#{self.class.internal_name}(#{self.health}/#{self.hitpoints})#{" [#{"%.1f" % location.x}, #{"%.1f" % location.y}]" if location}"
-	end
-
-    private
-
-    def variable_setup
-        (self.class.info || {}).each do |k, v|
-            instance_variable_set("@#{k}", v)
-        end
-        @classifications = self.class.classifications || []
+  def variable_setup
+    (self.class.info || {}).each do |k, v|
+      instance_variable_set("@#{k}", v)
     end
+    @classifications = self.class.classifications || []
+  end
 
 end
