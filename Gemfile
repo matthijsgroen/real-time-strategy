@@ -7,9 +7,11 @@ gem 'rails', '3.0.1'
 
 # Database
 #gem 'sqlite3-ruby', :require => 'sqlite3'
+gem "pg"
 gem "nofxx-georuby"
-gem "acts_as_paranoid"
-
+gem 'spatial_adapter'
+#gem "acts_as_paranoid"
+gem "state_machine"
 
 # Use unicorn as the web server
 # gem 'unicorn'
@@ -29,9 +31,9 @@ gem "acts_as_paranoid"
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
-# group :development, :test do
-#   gem 'webrat'
-# end
+group :development, :test do
+  gem 'webrat'
+end
 
 group :test do
   gem 'capybara'
@@ -43,7 +45,7 @@ group :test do
   gem "capybara-envjs"
   gem "launchy"
 
-#  gem "rspec-rails",      ">= 2.0.0.beta"
+  gem "rspec-rails"
 #  gem "machinist",        :git => "git://github.com/notahat/machinist.git"
 #  gem "faker"
 #  gem "ZenTest"
