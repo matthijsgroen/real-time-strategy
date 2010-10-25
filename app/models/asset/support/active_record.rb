@@ -12,7 +12,7 @@ module Asset::Support::ActiveRecord
     end
 
     def release asset
-      found_asset = assets.find_by_id asset.id
+      found_asset          = assets.find_by_id asset.id
       return false unless found_asset
       found_asset.location = self.exit_point
       found_asset.save!
@@ -42,10 +42,10 @@ module Asset::Support::ActiveRecord
     private
 
     def copy_instance_setting_from asset
-      self.faction_id = asset.faction_id || asset.faction.id
-      self.faction = asset.faction
+      self.faction_id       = asset.faction_id || asset.faction.id
+      self.faction          = asset.faction
       self.game_instance_id = asset.game_instance_id || asset.game_instance.id
-      self.game_instance = asset.game_instance
+      self.game_instance    = asset.game_instance
     end
 
     def update_building_size
@@ -96,21 +96,21 @@ module Asset::Support::ActiveRecord
       scope :hostile, lambda { |own_faction| where("faction_id <> ?", own_faction.id) }
       scope :distinct_types, select("DISTINCT ON(assets.type) assets.type, assets.*")
       scope :closest_at, lambda { |location, distance|
-        position = case location
-                     when Point then
-                       location
-                     when Asset::Base then
-                       location.location
-                   end
+        position  = case location
+                      when Point then
+                        location
+                      when Asset::Base then
+                        location.location
+                    end
         sql_point = "GeomFromText('#{position.text_geometry_type}(#{position.text_representation})',-1)"
         select("assets.*").joins("LEFT JOIN asset_movements ON asset_movements.asset_id = assets.id").
                 where("ST_DWithin(assets.location, #{sql_point}, #{distance})" +
-                        " OR ST_DWithin(asset_movements.path, #{sql_point}, #{distance})")
+                " OR ST_DWithin(asset_movements.path, #{sql_point}, #{distance})")
       }
       has_and_belongs_to_many :scripts,
-              :join_table => "script_assets",
-              :class_name => "Script::Base",
-              :foreign_key => "asset_id",
+              :join_table              => "script_assets",
+              :class_name              => "Script::Base",
+              :foreign_key             => "asset_id",
               :association_foreign_key => "script_id"
       before_create :set_asset_info
       before_save :update_building_size

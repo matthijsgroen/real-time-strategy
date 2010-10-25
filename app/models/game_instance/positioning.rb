@@ -14,24 +14,24 @@ module GameInstance::Positioning
   end
 
   def middle_of_asset_for_position(point, asset)
-    middle = {:width => ((asset.building_size[:width] * GRID_SIZE) / 2.0), :height => ((asset.building_size[:height] * GRID_SIZE) / 2.0)}
+    middle  = {:width => ((asset.building_size[:width] * GRID_SIZE) / 2.0), :height => ((asset.building_size[:height] * GRID_SIZE) / 2.0)}
     point_x = (point.x - middle[:width])
     point_y = (point.y - middle[:height])
     Point.from_x_y point_x - (point_x % GRID_SIZE) + middle[:width], point_y - (point_y % GRID_SIZE) + middle[:height]
   end
 
   def building_location_free?(point, asset)
-    middle = {:width => ((asset.building_size[:width] * GRID_SIZE) / 2.0), :height => ((asset.building_size[:height] * GRID_SIZE) / 2.0)}
-    point_x = (point.x - middle[:width])
-    point_y = (point.y - middle[:height])
+    middle   = {:width => ((asset.building_size[:width] * GRID_SIZE) / 2.0), :height => ((asset.building_size[:height] * GRID_SIZE) / 2.0)}
+    point_x  = (point.x - middle[:width])
+    point_y  = (point.y - middle[:height])
 
     location = Point.from_x_y point_x - (point_x % GRID_SIZE), point_y - (point_y % GRID_SIZE)
     building_space_available?(location, asset.building_size)
   end
 
   def building_location_for(asset_type, point)
-    s = asset_type.new.building_size
-    middle = {:width => ((s[:width] * GRID_SIZE) / 2.0), :height => ((s[:height] * GRID_SIZE) / 2.0)}
+    s       = asset_type.new.building_size
+    middle  = {:width => ((s[:width] * GRID_SIZE) / 2.0), :height => ((s[:height] * GRID_SIZE) / 2.0)}
     point_x = (point.x - middle[:width])
     point_y = (point.y - middle[:height])
 

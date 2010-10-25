@@ -14,14 +14,14 @@ class Faction::Base < ActiveRecord::Base
   validates_presence_of :game_instance_id, :name, :description
   validates_uniqueness_of :name, :scope => :game_instance_id
   has_many :assets, :class_name => "Asset::Base",
-          :before_add => :set_game_instance, :foreign_key => "faction_id", :dependent => :destroy
+          :before_add           => :set_game_instance, :foreign_key => "faction_id", :dependent => :destroy
   has_many :catalogs, :class_name => "Faction::Catalog", :foreign_key => "faction_id", :dependent => :destroy do
 
     def add_full_catalogs_of(asset_type)
       asset_class = Asset::Manager[asset_type]
       asset_class.catalog_abilities.collect do |ability|
         catalog_items = asset_class.ability_catalogs[ability]
-        catalog = proxy_owner.catalogs.find_or_create_by_asset_type_and_ability(asset_type.to_s, ability.to_s)
+        catalog       = proxy_owner.catalogs.find_or_create_by_asset_type_and_ability(asset_type.to_s, ability.to_s)
         catalog.items.delete_all
         catalog_items.each do |item|
           catalog.items << Faction::CatalogItem.create(:item_type => item.to_s)

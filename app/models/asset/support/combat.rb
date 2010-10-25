@@ -13,7 +13,7 @@ module Asset::Support::Combat
               b.location.euclidian_distance(location) }
 
       #puts "engageable hostiles nearby: #{possible_targets.collect(&:inspect).to_sentence} - @ #{I18n.l execution_time}"
-      target = possible_targets.first
+      target           = possible_targets.first
       return false unless target and target.location.euclidian_distance(location) < sight
       #puts "checking for hostiles nearby... found: #{target.inspect}"
       return false unless target
@@ -29,11 +29,11 @@ module Asset::Support::Combat
 
     def weapons
       @weapons ||= self.class.weapons.collect do |weapon|
-        weapon_instance = ::Asset::Weapon.new :name => weapon[:name], :amount_hour => weapon[:damage] * 1.hour,
-                :bulk_income => weapon[:burst] ?
+        weapon_instance         = ::Asset::Weapon.new :name => weapon[:name], :amount_hour => weapon[:damage] * 1.hour,
+                :bulk_income                                => weapon[:burst] ?
                         weapon[:burst] * weapon[:damage] : nil
         weapon_instance.targets = weapon[:targets]
-        weapon_instance.range = weapon[:range]
+        weapon_instance.range   = weapon[:range]
         weapon_instance
       end
     end
@@ -46,7 +46,7 @@ module Asset::Support::Combat
     def die(time = Time.now.utc)
       update_attribute :deleted_at, time
       self.scripts.each { |s| s.asset_notification(self, :destroyed, time) }
-      destroy!
+      destroy
     end
 
     def health
@@ -58,11 +58,11 @@ module Asset::Support::Combat
       #puts "a-#{self.id} receiving incoming damage from #{weapon.name}"
       #puts "a-#{self.id} no damage pool, creating one." unless damage_pool
       self.damage_pool = ResourceGroup.create! :owner => self,
-              :start_amount => 0,
-              :amount_limit => self.hitpoints,
-              :name => "damage_pool",
-              :game_instance_id => self.game_instance_id,
-              :start_amount_at => time unless damage_pool
+              :start_amount                           => 0,
+              :amount_limit                           => self.hitpoints,
+              :name                                   => "damage_pool",
+              :game_instance_id                       => self.game_instance_id,
+              :start_amount_at                        => time unless damage_pool
       self.damage_pool.resources << weapon
     end
 
@@ -121,11 +121,11 @@ module Asset::Support::Combat
       puts "#{I18n.l execution_time, :format => "%H:%M:%S"} - #{self.inspect} firing #{weapon_stats[:name]} at #{target.inspect}"
       #puts "a-#{self.id} listening scripts: #{scripts.inspect}"
 
-      weapon = resources.find_by_name weapon_stats[:name].to_s
+      weapon       = resources.find_by_name weapon_stats[:name].to_s
       raise ActiveRecord::RecordNotFound, "selected weapon \"#{weapon_stats[:name]}\" not found." unless weapon
-      attributes = {
-              :amount_hour => weapon_stats[:damage] * 1.hour,
-              :bulk_income => weapon_stats[:burst] ? 1.0 + (weapon_stats[:burst].to_f * weapon_stats[:damage]).floor : 1.0,
+      attributes   = {
+              :amount_hour  => weapon_stats[:damage] * 1.hour,
+              :bulk_income  => weapon_stats[:burst] ? 1.0 + (weapon_stats[:burst].to_f * weapon_stats[:damage]).floor : 1.0,
               :start_amount => 0, :start_amount_at => time
       }
       weapon.update_attributes attributes
@@ -145,7 +145,7 @@ module Asset::Support::Combat
 
       #puts "#{self.name} - #{self.metaclass}"
 
-      @weapons ||= []
+      @weapons          ||= []
       @weapons << {:name => name}.reverse_merge!(options)
 
       has_resource name, {}

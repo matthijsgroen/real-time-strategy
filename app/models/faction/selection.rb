@@ -2,12 +2,12 @@ class Faction::Selection < ActiveRecord::Base
   set_table_name "faction_selections"
   belongs_to :faction
   has_and_belongs_to_many :assets,
-          :join_table => "faction_selected_assets",
-          :class_name => "Asset::Base",
-          :foreign_key => "selection_id",
+          :join_table              => "faction_selected_assets",
+          :class_name              => "Asset::Base",
+          :foreign_key             => "selection_id",
           :association_foreign_key => "asset_id",
-          :before_add => :clear_available_abilities,
-          :after_remove => :clear_available_abilities
+          :before_add              => :clear_available_abilities,
+          :after_remove            => :clear_available_abilities
 
   validates_uniqueness_of :hotkey, :scope => :faction_id
   validates_inclusion_of :hotkey, :in => [nil] + (0..9).to_a
@@ -21,6 +21,7 @@ class Faction::Selection < ActiveRecord::Base
     result = true if available_abilities.include? method_id.to_sym and not result
     result
   end
+
   alias_method_chain :respond_to?, :abilities
 
   def method_missing_with_abilities(method_id, *args)
@@ -34,6 +35,7 @@ class Faction::Selection < ActiveRecord::Base
       end
     end
   end
+
   alias_method_chain :method_missing, :abilities
 
   private

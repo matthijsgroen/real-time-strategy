@@ -23,12 +23,12 @@ module Asset::Support::Requirements
     end
 
     def build_requires_presence_of(*args)
-      options = args.extract_options!
+      options       = args.extract_options!
       @requirements ||= []
       @requirements << {
-              :validates => :presence_of,
+              :validates     => :presence_of,
               :class_symbols => args,
-              :options => options
+              :options       => options
       }
     end
 

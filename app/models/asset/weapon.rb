@@ -1,5 +1,5 @@
 class Asset::Weapon < Resource
 
-	attr_accessor :targets, :range
-	
+  attr_accessor :targets, :range
+
 end

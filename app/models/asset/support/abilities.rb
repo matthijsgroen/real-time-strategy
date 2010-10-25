@@ -20,7 +20,7 @@ module Asset::Support::Abilities
   module ClassMethods
 
     def has_ability(*args)
-      options = args.extract_options!
+      options    = args.extract_options!
       @abilities ||= []
       args.each do |ability|
         @abilities << ability
@@ -29,8 +29,8 @@ module Asset::Support::Abilities
     end
 
     def has_catalog_ability(name, catalog, options = {})
-      method_name = options[:as] || name
-      @abilities ||= []
+      method_name        = options[:as] || name
+      @abilities         ||= []
       @abilities << method_name
       @catalog_abilities ||= []
       @catalog_abilities << method_name
@@ -62,9 +62,9 @@ module Asset::Support::Abilities
     RESERVED_ABILITY_NAMES = [:create, :update, :save]
 
     def define_ability_method(name, options={})
-      method_name = options[:as] || name
+      method_name  = options[:as] || name
       raise "Name '#{method_name}' is reserved" if RESERVED_ABILITY_NAMES.include? method_name
-      ability_code = <<-EOC
+      ability_code = %(
         run_callbacks :ability_invocation do
           script = Script::Manager[:#{name}]
           options = args.extract_options!
@@ -72,16 +72,16 @@ module Asset::Support::Abilities
           options[:initiated_by] = self
           script.execute(*(args << options))
         end
-      EOC
+      )
       evaluate_ability_method method_name, "def #{method_name}(*args); #{ability_code}; end"
     end
 
     def define_catalog_ability_method(name, catalog, options={})
-      method_name = options[:as] || name
+      method_name                        = options[:as] || name
       raise "Name '#{method_name}' is reserved" if RESERVED_ABILITY_NAMES.include? method_name
-      self.ability_catalogs ||= {}
+      self.ability_catalogs              ||= {}
       self.ability_catalogs[method_name] = catalog
-      ability_code = <<-EOC
+      ability_code                       = <<-EOC
         run_callbacks :ability_invocation do
           raise "Item: #\{item} not available" unless #{method_name}_catalog.include? item
           script = Script::Manager[:#{name}]
@@ -94,7 +94,7 @@ module Asset::Support::Abilities
       EOC
       evaluate_ability_method method_name, "def #{method_name}(item, *args); #{ability_code}; end"
 
-      catalog_code = <<-EOC
+      catalog_code                       = <<-EOC
         return @items if @items
         return [] unless faction
         catalog = faction.catalogs.find_by_asset_type_and_ability(self.class.internal_name.to_s, "#{method_name}")
