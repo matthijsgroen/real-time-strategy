@@ -2,7 +2,7 @@ class Script::Generic::Attack < Script::Base
   internal_name :attack
 
   parameter :asset, :type => :asset, :required => true
-  parameter :target, :type => :asset, :required => true
+  parameter :target, :type => :asset, :required => false
 
   def roll
     scenario do |step|

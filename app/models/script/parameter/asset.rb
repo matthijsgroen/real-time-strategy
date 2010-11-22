@@ -14,7 +14,7 @@ module Script::Parameter::Asset
       end
     end
     raise "#{self.inspect}: No Asset found for required parameter :#{parameter}. tried keys: #{[parameter, options[:alias]].compact.inspect} tried ID #{possible_id}" if not assigned and options[:required]
-    #puts "get #{self.class.internal_name}.#{parameter} = #{assigned.inspect}"
+    
     assigned
   end
 

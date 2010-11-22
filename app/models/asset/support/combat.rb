@@ -3,7 +3,7 @@ module Asset::Support::Combat
   module InstanceMethods
 
     def engage_near_hostiles
-      return false unless has_weapons?
+      return false unless has_weapons? and alive?
 
       possible_targets = game_instance.assets.hostile(faction).closest_at(location, sight)
       #puts "hostiles nearby: #{possible_targets.collect(&:inspect).to_sentence} - @ #{I18n.l execution_time}"
@@ -20,7 +20,7 @@ module Asset::Support::Combat
 
 
       attack :target => target, :start_time => execution_time
-      return true
+      true
     end
 
     def has_weapons?
@@ -39,7 +39,7 @@ module Asset::Support::Combat
     end
 
     def damage_pool_full(time)
-      puts "#{I18n.l execution_time, :format => "%H:%M:%S"} - #{self.inspect}: Aaaargh!"
+      puts "#{I18n.l execution_time, :format => "%H:%M:%S"} - #{self.inspect}: I die / am destroyed!"
       die(time)
     end
 
@@ -47,6 +47,10 @@ module Asset::Support::Combat
       update_attribute :deleted_at, time
       self.scripts.each { |s| s.asset_notification(self, :destroyed, time) }
       destroy
+    end
+
+    def alive?
+      self.health > 0
     end
 
     def health
@@ -100,13 +104,13 @@ module Asset::Support::Combat
 
     def select_weapon_for target
       result = self.class.weapons.find do |weapon|
-        #puts "testing weapon-#{weapon[:name]}[#{weapon[:targets].to_sentence}] for target-#{target.class.internal_name}[#{target.classifications.to_sentence}]"
+        puts "testing weapon-#{weapon[:name]}[#{weapon[:targets].to_sentence}] for target-#{target.class.internal_name}[#{target.classifications.to_sentence}]"
         target.meets_classifications? weapon[:targets]
       end
     end
 
     def can_engage? target
-      select_weapon_for(target) ? true : false
+      target.alive? and select_weapon_for(target)
     end
 
     private
@@ -130,7 +134,7 @@ module Asset::Support::Combat
       }
       weapon.update_attributes attributes
       target.add_damage_from weapon, time
-      return true
+      true
     end
   end
 

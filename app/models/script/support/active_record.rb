@@ -1,13 +1,5 @@
 module Script::Support::ActiveRecord
 
-  module InstanceMethods
-
-  end
-
-  module ClassMethods
-
-  end
-
   def self.included(base)
     base.extend(ClassMethods)
     base.class_eval do
@@ -28,6 +20,14 @@ module Script::Support::ActiveRecord
               :foreign_key             => "script_id",
               :association_foreign_key => "asset_id"
     end
+  end
+
+  module InstanceMethods
+
+  end
+
+  module ClassMethods
+
   end
 
 end

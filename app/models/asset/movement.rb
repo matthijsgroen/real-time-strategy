@@ -40,7 +40,7 @@ class Asset::Movement < ActiveRecord::Base
 
       puts "#{self.asset.inspect} in range of #{asset_in_proximity.inspect}: " +
               "#{I18n.l in_range, :format => "%H:%M:%S"} - #{out_of_range ? I18n.l(out_of_range, :format => "%H:%M:%S") : "n/a"} arrival: #{I18n.l arrival_at, :format => "%H:%M:%S"}"
-      returning build_proximity_trigger do |t|
+      build_proximity_trigger.tap do |t|
         t.alerted_asset_id      = asset_in_proximity.id
         t.asset_in_proximity_id = self.asset_id
         t.in_range_at           = in_range

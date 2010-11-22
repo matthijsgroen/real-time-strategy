@@ -64,7 +64,7 @@ module Script::Support::Parameter
         self.send "serialize_#{param_options[:type]}", parameter, value, self.parameters
         #end
       end
-      #puts "serializing -- #{self.class.internal_name}: #{self.parameters.inspect}"
+      puts "serializing -- #{self.class.internal_name}: #{self.parameters.inspect}"
     end
 
   end

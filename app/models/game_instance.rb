@@ -8,7 +8,7 @@ class GameInstance < ActiveRecord::Base
 
   def update_world(time = Time.now.utc)
     return if paused?
-    while finished_event = timed_events.find(:first, :conditions => ["time_trigger <= ?", time])
+    while finished_event = timed_events.first(:conditions => ["time_trigger <= ?", time])
       #puts "event_list: #{timed_events(true).inspect}"
       #raise "event finished"
       $game_instance_times          ||= {}
