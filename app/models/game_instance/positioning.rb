@@ -45,7 +45,7 @@ module GameInstance::Positioning
   def building_space_available?(point, size)
     space_occupied = game_instance.assets.find_by_ground_space LineString.from_points([Point.from_x_y(point.x, point.y),
             Point.from_x_y(point.x - 1 + size[:width].grid, point.y - 1 + size[:height].grid)])
-    space_occupied ? false : true
+    !space_occupied
   end
 
 

@@ -46,7 +46,6 @@ module Script::Support::Execution
       self.execution_time = self.end_time || game_time
       puts "#{I18n.l execution_time, :format => "%H:%M:%S"} - finished step #{self.inspect}"
       advance
-      puts "#{I18n.l execution_time, :format => "%H:%M:%S"} - testing for new step #{self.inspect}"
       roll
       save! unless frozen? #if script.end_time and script.end_time > script.game_time
     end
@@ -163,7 +162,7 @@ module Script::Support::Execution
       else
         script = self.new
       end
-      puts options.inspect
+      #puts options.inspect
       script.position = 0
       script.load_settings_from options
       script.load_parameters_from options

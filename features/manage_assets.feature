@@ -55,7 +55,7 @@ Feature: Manage Assets
     And Red should have 1 ColonyOutpost 
 
   Scenario: Taking up space
-    Given Red has 1 ColonyOutpost at 96, 96
+    Given Red has 1 ColonyOutpost at 94, 94
     And Red has the following resources:
       | amount  | type  |
       | 5000    | oil   |

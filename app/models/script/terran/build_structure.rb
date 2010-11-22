@@ -25,6 +25,8 @@ class Script::Terran::BuildStructure < Script::Base
     # this way faction's upgrades will be taken into account.
     product_instance = building_type.new :faction => yard.faction
 
+    puts "trying to create a building on #{location.inspect}"
+
     unless building_space_available?(location, product_instance.building_size)
       raise GameInstance::GameplayError.new(yard, "Can't build there", :no_build_space)
     end
